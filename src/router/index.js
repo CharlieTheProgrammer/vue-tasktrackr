@@ -41,6 +41,12 @@ const routes = [
       import(/* webpackChunkName: "login" */ "../views/Login.vue"),
   },
   {
+    path: "/register",
+    name: "Register",
+    component: () =>
+      import(/* webpackChunkName: "register" */ "../views/Register.vue"),
+  },
+  {
     path: "/projects",
     name: "Projects",
     component: () =>
@@ -61,6 +67,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
 });
 
