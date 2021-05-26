@@ -73,7 +73,7 @@
 					<div class="text-5xl font-semibold mb-2">Managing Entries</div>
 					<div class="w-full flex">
 						<div class="w-2/3">
-							<video autoplay="true" loop="true" src="@/assets/images/Creating_Categories.mp4" width="700px" class="block py-4"></video>
+							<video autoplay="true" loop="true" src="@/assets/images/Using_Application.mp4" width="700px" class="block py-4"></video>
 						</div>
 						<div class="space-y-3 mt-4 pl-2 w-1/3">
 							<div class="text-xl font-semibold">Working with Entries</div>
