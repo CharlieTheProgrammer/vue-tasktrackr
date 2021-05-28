@@ -1,12 +1,12 @@
 <template>
 	<div id="app" class="flex flex-col min-h-screen">
-    <v-header :isAuthenticated="false"></v-header>
+		<v-header :isAuthenticated="false"></v-header>
 
 		<div class="flex-1 flex flex-grow">
 			<router-view></router-view>
 		</div>
 
-    <v-footer></v-footer>
+		<v-footer></v-footer>
 	</div>
 </template>
 
@@ -16,13 +16,11 @@ import Header from './components/Header.vue';
 
 export default {
 	components: {
-    'v-footer': Footer,
-    'v-header': Header
-  },
+		'v-footer': Footer,
+		'v-header': Header,
+	},
 	data: function () {
-		return {
-      
-    };
+		return {};
 	},
 	computed: {
 		isAuthenticated: function () {
