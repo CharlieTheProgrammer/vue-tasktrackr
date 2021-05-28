@@ -43,9 +43,6 @@
 </template>
 
 <script>
-// import notifications from './notifications/Notifications.vue';
-// import { ErrorsBus } from '../main';
-
 export default {
 	props: {
 		isAuthenticated: {
@@ -53,16 +50,9 @@ export default {
 			required: true,
 		},
 	},
-	components: {
-		// 'app-notifications': notifications,
-	},
+
 	methods: {
-		logout: function () {
-			this.$store
-				.dispatch('logoutAttempt')
-				.then(this.$router.push('/', () => window.location.reload()))
-				.catch((err) => ErrorsBus.errorHandler(err));
-		},
+		logout: function () {},
 	},
 	computed: {
 		// testMode: function () {
