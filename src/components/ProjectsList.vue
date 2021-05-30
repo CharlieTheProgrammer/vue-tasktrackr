@@ -5,7 +5,8 @@
 			<!-- <div class="text-sm text-gray-400">Select a project below</div> -->
 			<button class="text-xs rounded px-2 py-2 bg-indigo-200" @click="addProject">Add New Project</button>
 		</header>
-		<div class="flex flex-col">
+		<div class="" v-if="!loading && projects.length === 0">You have no projects. Please add a new project.</div>
+		<div class="flex flex-col" v-else>
 			<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
 					<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -19,7 +20,15 @@
 								</tr>
 							</thead>
 							<tbody class="bg-white divide-y divide-gray-200">
-								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows">
+								<tr class="animate-pulse" v-if="loading">
+									<td class="pl-6 py-4 whitespace-nowrap rounded-md">
+										<div class="bg-gray-200 h-8 w-full"></div>
+									</td>
+									<td class="pr-6 py-4 whitespace-nowrap rounded-md">
+										<div class="bg-gray-200 h-8 w-full"></div>
+									</td>
+								</tr>
+								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows" v-else>
 									<td class="px-6 py-4 whitespace-nowrap">
 										<label class="block" v-if="project.editable">
 											<input
@@ -46,7 +55,7 @@
 										>
 											Save
 										</button>
-										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="project.editable = !project.editable" v-if="!project.editable">
+										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="deleteProject(project)">
 											Delete
 										</button>
 									</td>
@@ -62,49 +71,47 @@
 
 <script lang="ts">
 import { CreateProjectDto } from '@/dtos/create-project.dto';
-import { ProjectsService } from "@/services/projects.service";
+import { ProjectsService } from '@/services/projects.service';
+import { AuthService } from '@/services/auth.service';
 
 export default {
-	// props: {
-	// 	projects: {
-	// 		type: Array,
-	// 		default: () => [],
-	// 	},
-	// },
 	data() {
 		return {
 			projectsService: new ProjectsService(),
+			authService: new AuthService(),
+			loading: true,
 			projects: [
-				{
-					id: 1,
-					name: 'Project 1',
-					hidden: false,
-					editable: false,
-				},
-				{
-					id: 2,
-					name: 'Project 2',
-					hidden: false,
-					editable: false,
-				},
-				{
-					id: 3,
-					name: 'Project 3',
-					hidden: false,
-				},
-				{
-					id: 4,
-					name: 'Project 4',
-					hidden: false,
-				},
+				// {
+				// 	id: 1,
+				// 	name: 'Project 1',
+				// 	hidden: false,
+				// 	editable: false,
+				// },
+				// {
+				// 	id: 2,
+				// 	name: 'Project 2',
+				// 	hidden: false,
+				// 	editable: false,
+				// },
+				// {
+				// 	id: 3,
+				// 	name: 'Project 3',
+				// 	hidden: false,
+				// },
+				// {
+				// 	id: 4,
+				// 	name: 'Project 4',
+				// 	hidden: false,
+				// },
 			],
 		};
 	},
-	created() {
-		// Api call to get the projects
-		this.projectsService.findAll().then(data => console.log(data));
-
-		console.log(process.env.VUE_APP_API_URL);
+	// Note: I can use async here, but be careful because Vue will treat this as sync
+	// meaning it will not wait for this code to finish before other steps, like rendering, etc
+	// This is where a loading state becomes useful.
+	async created() {
+		await this.getProjects();
+		this.loading = false;
 	},
 	methods: {
 		focusInput(node) {
@@ -115,6 +122,10 @@ export default {
 			return items.findIndex((item) => item.name === '');
 		},
 
+		filterArray(arr, id) {
+			return arr.filter(item => item.id !== id)
+		},
+
 		handleEmptyName() {
 			this.$nextTick(() => {
 				const ref = this.$refs.projectRows[this.hasEmptyName(this.projects)];
@@ -122,10 +133,21 @@ export default {
 			});
 		},
 
+		async getProjects() {
+			let projects = await this.projectsService.findAll();
+			projects = projects.map((project) => {
+				project.editable = false;
+				return project;
+			});
+			this.projects = projects;
+			return;
+		},
+
 		addProject() {
 			if (this.hasEmptyName(this.projects) > -1) return this.handleEmptyName();
 
 			let project = new CreateProjectDto();
+			// @ts-ignore
 			project.editable = true;
 			this.projects.push(project);
 
@@ -136,13 +158,28 @@ export default {
 			});
 		},
 
-		async saveProject(project, index) {
-			// How do we find the row that matches the projects without assuming it has an id?
+		async deleteProject(project) {
+			const result = window.confirm(`Are you sure you want to delete ${project.name}`);
+			if (result && project.id) {
+			 let res =	await this.projectsService.delete(project.id);
+			 this.projects = this.filterArray(this.projects, project.id);
+			} else if (result)
+			 this.projects = this.filterArray(this.projects, project.id);
+		},
+
+		async saveProject(project: CreateProjectDto, index) {
 			if (this.hasEmptyName(this.projects) > -1) return this.handleEmptyName();
+			let user = this.authService.getUser();
+			project.userId = user.id;
+			// @ts-ignore
 			project.editable = !project.editable;
 
-			// api call to save project
-			console.log(project);
+			if (project.id) await this.projectsService.update(project);
+			else {
+				await this.projectsService.create(project);
+				await this.getProjects();
+			}
+			return;
 		},
 	},
 };
