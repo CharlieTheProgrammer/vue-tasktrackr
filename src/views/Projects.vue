@@ -1,38 +1,24 @@
 <template>
 	<div class="max-w-4xl mx-auto w-full">
-    <header class="mb-4">
-      <h1 class="text-4xl mb-2">Projects</h1>
-      <!-- <div class="text-sm text-gray-400">Select a project below</div> -->
-    </header>
-		<div class="flex flex-col">
-			<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-				<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-					<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-						<table class="min-w-full divide-y divide-gray-200">
-							<thead class="bg-gray-50">
-								<tr>
-									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-								</tr>
-							</thead>
-							<tbody class="bg-white divide-y divide-gray-200">
-								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" @click="test(project.id)">
-									<td class="px-6 py-4 whitespace-nowrap">
-                    <!-- <router-link to="/projects/${project.id}"> -->
-										  {{ project.name }}
-                    <!-- </router-link> -->
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+		<!-- <h1 class="text-5xl font-light text-gray-400 mb-6">Settings</h1> -->
+		<div class="space-y-14">
+			
+			<v-projects-list ref="projects" :projects="projects" @addProject="addProject" @saveProject="saveProject"></v-projects-list>
+
 		</div>
 	</div>
 </template>
 
-<script>
+<script lang="ts">
+import { CreateCategoryDto } from '@/dtos/create-category.dto';
+import { CreateProjectDto } from '@/dtos/create-project.dto';
+import ProjectsListVue from '@/components/ProjectsList.vue';
+import CategoriesListVue from '@/components/CategoriesList.vue';
+
 export default {
+	components: {
+		'v-projects-list': ProjectsListVue,
+	},
 	data() {
 		return {
 			projects: [
@@ -40,6 +26,7 @@ export default {
 					id: 1,
 					name: 'Project 1',
 					hidden: false,
+					editable: false,
 				},
 				{
 					id: 2,
@@ -60,14 +47,60 @@ export default {
 		};
 	},
 	methods: {
+		focusInput(node) {
+			node.querySelector('input').focus();
+		},
+		// skip adding items if any row has an empty name
+		skipAdd(items): boolean {
+			return !!items.find(item => item.name === "");
+		},
+		hasEmptyName(items): number {
+			return items.findIndex(item => item.name === "");
+		},
+		focusOnElement() {
+
+		},
+		addProject() {
+			if (this.hasEmptyName(this.projects) > -1) {
+				this.$nextTick(() => {
+					// const lastIndex = this.$refs.projects.$refs.projectRows.length - 1;
+					const ref = this.$refs.projects.$refs.projectRows[this.hasEmptyName(this.projects)]
+					this.focusInput(ref);
+				});
+				return;
+			};
+			let project = new CreateProjectDto();
+			project.editable = true;
+			this.projects.push(project);
+
+			this.$nextTick(() => {
+				const lastIndex = this.$refs.projects.$refs.projectRows.length - 1;
+				const ref = this.$refs.projects.$refs.projectRows[lastIndex]
+				this.focusInput(ref);
+			});
+		},
+		async saveProject(project) {
+			//
+			project.editable = !project.editable;
+
+			// api call to save project
+			console.log(project);
+		},
+		async saveCategory(category) {
+			//
+			category.editable = !category.editable;
+
+			// api call to save category
+			console.log(category);
+		},
 		setCurrrentProjectId: function (key) {
 			console.log(key);
 			this.$store.dispatch('setCurrrentProjectId', key);
 			this.$router.push('home');
 		},
-    test(id) {
-      console.log(id)
-    }
+		test(id) {
+			console.log(id);
+		},
 	},
 	computed: {
 		// projects: function () {
