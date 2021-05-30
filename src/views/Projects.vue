@@ -2,7 +2,7 @@
 	<div class="max-w-4xl mx-auto w-full">
 		<div class="space-y-14">
 			
-			<v-projects-list ref="projects" :projects="projects" @addProject="addProject" @saveProject="saveProject"></v-projects-list>
+			<v-projects-list></v-projects-list>
 
 		</div>
 	</div>
