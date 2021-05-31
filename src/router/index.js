@@ -46,15 +46,20 @@ const routes = [
 		component: () => import(/* webpackChunkName: "projects" */ '../views/Projects.vue'),
 	},
 	{
+		path: '/projects/:id',
+		name: 'Project',
+		component: () => import(/* webpackChunkName: "projects" */ '../views/Workspace.vue'),
+	},
+	{
 		path: '/settings',
 		name: 'Settings',
 		component: () => import(/* webpackChunkName: "settings" */ '../views/Settings.vue'),
 	},
-	{
-		path: '/workspace',
-		name: 'Workspace',
-		component: () => import(/* webpackChunkName: "workspace" */ '../views/Workspace.vue'),
-	},
+	// {
+	// 	path: '/workspace',
+	// 	name: 'Workspace',
+	// 	component: () => import(/* webpackChunkName: "workspace" */ '../views/Workspace.vue'),
+	// },
 ];
 
 const router = new VueRouter({
