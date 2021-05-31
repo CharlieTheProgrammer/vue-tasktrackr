@@ -28,7 +28,7 @@
 										<div class="bg-gray-200 h-8 w-full"></div>
 									</td>
 								</tr>
-								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows" v-else>
+								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows" v-else @click="goTo(project)">
 									<td class="px-6 py-4 whitespace-nowrap">
 										<label class="block" v-if="project.editable">
 											<input
@@ -55,9 +55,7 @@
 										>
 											Save
 										</button>
-										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="deleteProject(project)">
-											Delete
-										</button>
+										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="deleteProject(project)">Delete</button>
 									</td>
 								</tr>
 							</tbody>
@@ -114,6 +112,11 @@ export default {
 		this.loading = false;
 	},
 	methods: {
+		goTo(project) {
+			const { id } = project;
+			this.$router.push({ path: `/projects/${id}` });
+		},
+
 		focusInput(node) {
 			node.querySelector('input').focus();
 		},
@@ -123,7 +126,7 @@ export default {
 		},
 
 		filterArray(arr, id) {
-			return arr.filter(item => item.id !== id)
+			return arr.filter((item) => item.id !== id);
 		},
 
 		handleEmptyName() {
@@ -161,10 +164,9 @@ export default {
 		async deleteProject(project) {
 			const result = window.confirm(`Are you sure you want to delete ${project.name}`);
 			if (result && project.id) {
-			 let res =	await this.projectsService.delete(project.id);
-			 this.projects = this.filterArray(this.projects, project.id);
-			} else if (result)
-			 this.projects = this.filterArray(this.projects, project.id);
+				await this.projectsService.delete(project.id);
+				this.projects = this.filterArray(this.projects, project.id);
+			} else if (result) this.projects = this.filterArray(this.projects, project.id);
 		},
 
 		async saveProject(project: CreateProjectDto, index) {
