@@ -836,6 +836,9 @@ module.exports = {
     "disabled",
   ],
   variants: {
+    extend: {
+      opacity: ['disabled'],
+    },
     accessibility: ["responsive", "focus-within", "focus"],
     alignContent: ["responsive"],
     alignItems: ["responsive"],
@@ -1027,7 +1030,5 @@ module.exports = {
     wordBreak: ["responsive"],
     zIndex: ["responsive", "focus-within", "focus"],
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+  plugins: [require("@tailwindcss/forms")],
 };
