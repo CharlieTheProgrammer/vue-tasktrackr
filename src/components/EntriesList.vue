@@ -93,35 +93,18 @@ import { CreateEntryDto } from '@/dtos/create-entry.dto';
 import { UpdateEntryDto } from '@/dtos/update-entry.dto';
 import { ProjectsService } from '@/services/projects.service';
 import { EntriesService } from '@/services/entries.service';
+import { CategoriesService } from '@/services/categories.service';
 import { AuthService } from '@/services/auth.service';
 
 export default {
 	data() {
 		return {
+			categoriesService: new CategoriesService(),
 			projectsService: new ProjectsService(),
 			entriesService: new EntriesService(),
 			authService: new AuthService(),
 			loading: true,
-			categories: [
-				{
-					id: 1,
-					userId: 1,
-					name: 'Testing',
-					hidden: false,
-				},
-				{
-					id: 2,
-					userId: 1,
-					name: 'Planning',
-					hidden: false,
-				},
-				{
-					id: 3,
-					userId: 1,
-					name: 'Deploying',
-					hidden: false,
-				},
-			],
+			categories: [],
 			projects: [],
 			entries: [
 				{
@@ -189,8 +172,12 @@ export default {
 		},
 	},
 	async created() {
-		await this.getEntries();
-		await this.getProjects();
+		await Promise.all([
+			this.getCategories(),
+			this.getEntries(),
+			this.getProjects(),
+		]);
+
 		this.loading = false;
 	},
 	methods: {
@@ -200,6 +187,11 @@ export default {
 
 		filterArray(arr, id) {
 			return arr.filter((item) => item.id !== id);
+		},
+
+		async getCategories() {
+			this.categories = await this.categoriesService.findAll();
+			return;
 		},
 
 		async getEntries() {
