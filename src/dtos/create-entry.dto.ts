@@ -1,4 +1,4 @@
-import { IsOptional, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsOptional, IsNotEmpty, IsDateString, IsString } from 'class-validator';
 import { DateTime } from 'luxon';
 
 export class CreateEntryDto {
@@ -15,6 +15,8 @@ export class CreateEntryDto {
   @IsNotEmpty()
   userId: number;
 
+  @IsOptional()
+  @IsString()
   description: string;
 
   @IsDateString()
