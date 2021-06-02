@@ -227,11 +227,6 @@ export default {
 		this.loading = false;
 	},
 	methods: {
-		goTo(entry) {
-			const { id } = entry;
-			this.$router.push({ path: `/entries/${id}` });
-		},
-
 		focusInput(node) {
 			node.querySelector('textarea').focus();
 		},
@@ -239,17 +234,6 @@ export default {
 		filterArray(arr, id) {
 			return arr.filter((item) => item.id !== id);
 		},
-
-		// hasEmptyName(items): number {
-		// 	return items.findIndex((item) => item.name === '');
-		// },
-
-		// handleEmptyName() {
-		// 	this.$nextTick(() => {
-		// 		const ref = this.$refs.projectRows[this.hasEmptyName(this.entries)];
-		// 		this.focusInput(ref);
-		// 	});
-		// },
 
 		async getEntries() {
 			this.entries = await this.entriesService.findAll();
@@ -262,8 +246,6 @@ export default {
 		},
 
 		async addEntry() {
-			// if (this.hasEmptyName(this.entries) > -1) return this.handleEmptyName();
-
 			// @ts-ignore
 			let entry = new CreateEntryDto({
 				projectId: this.project.id,
@@ -290,7 +272,6 @@ export default {
 		},
 
 		async saveEntry(entry: CreateEntryDto) {
-			// if (this.hasEmptyName(this.entries) > -1) return this.handleEmptyName();
 			let user = this.authService.getUser();
 			entry.userId = user.id;
 
