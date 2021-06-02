@@ -41,17 +41,19 @@
 								</tr>
 								<tr v-for="entry in entries" :key="entry.id" ref="entryRows" v-else>
 									<td class="py-4">
-										<select class="m-2.5 rounded-md border border-indigo-100 w-full">
-											<!-- <option v-for="(category, index) in project.categories" :key="index" :selected="entry.categoryId == category.id ? 'selected' : null" :value="category.id">
-														{{ category.name }}
-													</option> -->
+										<select class="m-2.5 rounded-md border border-indigo-100 w-full" v-model="entry.categoryId" @change="saveEntry(entry)">
+											<option value=""></option>
+											<option v-for="(category, index) in categories" :key="index" 
+											:selected="entry.categoryId == category.id ? 'selected' : null" :value="category.id">
+												{{ category.name }}
+											</option>
 										</select>
 									</td>
 									<td class="text-center text-gray-400">
 										{{ entry.startTime | toDateFormat }}
 									</td>
 									<td>
-										<textarea class="w-full m-2.5 rounded-md border border-indigo-100" :value="entry.description"> </textarea>
+										<textarea class="w-full m-2.5 rounded-md border border-indigo-100" v-model="entry.description" @blur="saveEntry(entry)"> </textarea>
 									</td>
 									<td class="text-center text-gray-400">
 										{{ entry.startTime | toTimeFormat }}
@@ -100,61 +102,26 @@ export default {
 			entriesService: new EntriesService(),
 			authService: new AuthService(),
 			loading: true,
-			// project: {
-			// 	id: 1,
-			// 	name: 'Project 1',
-			// 	hidden: false,
-			// 	categories: [
-			// 		{
-			// 			id: 1,
-			// 			userId: 1,
-			// 			name: 'Testing',
-			// 			hidden: false,
-			// 		},
-			// 		{
-			// 			id: 2,
-			// 			userId: 1,
-			// 			name: 'Planning',
-			// 			hidden: false,
-			// 		},
-			// 		{
-			// 			id: 3,
-			// 			userId: 1,
-			// 			name: 'Deploying',
-			// 			hidden: false,
-			// 		},
-			// 	],
-			// 	entries: [
-			// 		{
-			// 			id: 1,
-			// 			projectId: 1,
-			// 			categoryId: 1,
-			// 			userId: 1,
-			// 			description: 'Some text',
-			// 			startTime: '2021-05-26T21:37:20.430Z',
-			// 			endTime: '2021-05-26T21:56:20.430Z',
-			// 		},
-			// 		{
-			// 			id: 2,
-			// 			projectId: 1,
-			// 			categoryId: 1,
-			// 			userId: 1,
-			// 			description: 'lorem',
-			// 			startTime: '2021-05-26T21:37:20.430Z',
-			// 			endTime: '2021-05-26T21:56:20.430Z',
-			// 		},
-			// 		{
-			// 			id: 3,
-			// 			projectId: 1,
-			// 			categoryId: 1,
-			// 			userId: 1,
-			// 			description: 'I am the third entry',
-			// 			startTime: '2021-05-26T21:37:20.430Z',
-			// 			endTime: '2021-05-26T21:56:20.430Z',
-			// 		},
-			// 	],
-			// },
-
+			categories: [
+				{
+					id: 1,
+					userId: 1,
+					name: 'Testing',
+					hidden: false,
+				},
+				{
+					id: 2,
+					userId: 1,
+					name: 'Planning',
+					hidden: false,
+				},
+				{
+					id: 3,
+					userId: 1,
+					name: 'Deploying',
+					hidden: false,
+				},
+			],
 			projects: [],
 			entries: [
 				{
@@ -222,7 +189,7 @@ export default {
 		},
 	},
 	async created() {
-		// await this.getEntries();
+		await this.getEntries();
 		await this.getProjects();
 		this.loading = false;
 	},
@@ -253,18 +220,18 @@ export default {
 
 			this.entries.push(entry);
 
-			this.$nextTick(() => {
-				const lastIndex = this.$refs.entryRows.length - 1;
-				const ref = this.$refs.entryRows[lastIndex];
-				this.focusInput(ref);
-			});
-
 			this.saveEntry(entry);
 		},
 
 		async deleteEntry(entry: CreateEntryDto) {
-			const truncatedDesc = entry.description.substring(0, 20);
-			const result = window.confirm(`Are you sure you want to delete "${truncatedDesc}..."`);
+			const truncatedDesc = entry.description?.substring(0, 20);
+			let result = null;
+			if (!truncatedDesc) {
+				result = window.confirm(`Are you sure you want to delete this entry?`);
+			} else {
+				result = window.confirm(`Are you sure you want to delete "${truncatedDesc}"`);
+			}
+
 			if (result && entry.id) {
 				let res = await this.entriesService.delete(entry.id);
 				this.entries = this.filterArray(this.entries, entry.id);
@@ -279,10 +246,16 @@ export default {
 			else {
 				await this.entriesService.create(entry);
 				await this.getEntries();
+
+				this.$nextTick(() => {
+					const lastIndex = this.$refs.entryRows.length - 1;
+					const ref = this.$refs.entryRows[lastIndex];
+					this.focusInput(ref);
+				});
 			}
 			return;
 		},
-	},
+	}
 };
 </script>
 
