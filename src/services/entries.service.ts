@@ -1,29 +1,31 @@
 import { CreateEntryDto } from '@/dtos/create-entry.dto';
 import { UpdateEntryDto } from '@/dtos/update-entry.dto';
+import { Entry } from '@/entities/entry.entity';
 import httpService from './http.service';
-
+import { plainToClass } from 'class-transformer';
 
 export class EntriesService {
 	constructor() {}
 
 	async create(createEntryDto: CreateEntryDto) {
-    let response = await httpService.post('/entries', createEntryDto)
+		let response = await httpService.post('/entries', createEntryDto);
 		return response.data;
 	}
 
-	async findAll(): Promise<any[]>{
+	async findAll(): Promise<any[]> {
 		const response = await httpService.get('/entries');
-    return response.data;
+		// @ts-ignore
+		return plainToClass(Entry, response.data);
 	}
 
 	async findOne(id: number) {
 		const response = await httpService.get('/entries/' + id);
-    return response.data;
+		return response.data;
 	}
 
 	async update(updateEntryDto: UpdateEntryDto) {
-    const response =  await httpService.patch('/entries/' + updateEntryDto.id, updateEntryDto);
-    return response.data;
+		const response = await httpService.patch('/entries/' + updateEntryDto.id, updateEntryDto);
+		return response.data;
 	}
 
 	async delete(id: number) {

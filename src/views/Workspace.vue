@@ -1,17 +1,5 @@
 <template>
 	<div class="w-full max-w-6xl mx-auto">
-		<header class="mb-10">
-			<div class="flex justify-between items-center">
-				<div class="text-center">
-					<div class="text-5xl font-light">Timer</div>
-					<div class="text-6xl">00:00:00</div>
-				</div>
-				<div>
-					<button class="rounded px-4 py-4 bg-gray-100">New Entry</button>
-				</div>
-			</div>
-		</header>
-
 		<section>
 			<!-- Project nav -->
 			<div class="bg-gray-100 hidden">
