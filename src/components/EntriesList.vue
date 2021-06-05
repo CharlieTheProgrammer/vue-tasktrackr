@@ -15,7 +15,7 @@
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-									<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+									<!-- <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th> -->
 									<!-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th> -->
 									<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Time</th>
 									<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
@@ -39,43 +39,76 @@
 										<div class="bg-gray-200 h-8 w-full"></div>
 									</td>
 								</tr>
-								<tr v-for="entry in entries" :key="entry.id" ref="entryRows" v-else>
+								<tr class="transition duration-500 ease-in-out" :class="{ 'bg-indigo-500 text-white': entry.hasRunningTimer }" v-for="entry in entries" :key="entry.id" ref="entryRows" v-else>
 									<td class="py-4">
 										<select class="m-2.5 rounded-md border border-indigo-100 w-full" v-model="entry.categoryId" @change="saveEntry(entry)">
 											<option value=""></option>
-											<option v-for="(category, index) in categories" :key="index" 
-											:selected="entry.categoryId == category.id ? 'selected' : null" :value="category.id">
+											<option v-for="(category, index) in categories" :key="index" :selected="entry.categoryId == category.id ? 'selected' : null" :value="category.id">
 												{{ category.name }}
 											</option>
 										</select>
 									</td>
-									<td class="text-center text-gray-400">
-										{{ entry.startTime | toDateFormat }}
+									<td class="text-center" :class="entry.hasRunningTimer ? 'text-gray-200' : ''">
+										{{ entry.createdAt | toDateFormat }}
 									</td>
 									<td>
 										<textarea class="w-full m-2.5 rounded-md border border-indigo-100" v-model="entry.description" @blur="saveEntry(entry)"> </textarea>
 									</td>
-									<td class="text-center text-gray-400">
+									<!-- <td class="text-center text-gray-400">
 										{{ entry.startTime | toTimeFormat }}
-									</td>
+									</td> -->
 									<!-- <td v-if="displayEndTime" class="text-center d-none d-sm-table-cell">{{ entry.total_time | toTimeFormat }}</td> -->
-									<td class="text-center text-gray-500">
-										{{ entry.startTime | generateTotalTime(entry.endTime) }}
+									<td class="text-center">
+										{{ Math.round(entry.totalSeconds) }}s
+										<!-- {{ entry.startTime | generateTotalTime(entry.endTime) }} -->
 									</td>
-									<td class="w-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											class="mx-auto h-5 w-5 text-gray-300 hover:text-red-600 cursor-pointer"
-											viewBox="0 0 20 20"
-											fill="currentColor"
-											@click="deleteEntry(entry)"
-										>
-											<path
-												fill-rule="evenodd"
-												d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-												clip-rule="evenodd"
-											/>
-										</svg>
+									<td class="w-2 px-3">
+										<div class="flex items-center space-x-3">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												class="h-12 w-12 cursor-pointer"
+												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-400'"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+												v-if="entry.hasRunningTimer"
+												@click="timerStop(entry)"
+											>
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+											</svg>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												class="h-12 w-12 cursor-pointer"
+												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-400'"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+												@click="timerStart(entry)"
+												v-else
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+												/>
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+											</svg>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												class="mx-auto h-5 w-5 text-gray-300 hover:text-red-600 cursor-pointer"
+												viewBox="0 0 20 20"
+												fill="currentColor"
+												@click="deleteEntry(entry)"
+											>
+												<path
+													fill-rule="evenodd"
+													d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+													clip-rule="evenodd"
+												/>
+											</svg>
+										</div>
 									</td>
 								</tr>
 							</tbody>
@@ -103,40 +136,52 @@ export default {
 			projectsService: new ProjectsService(),
 			entriesService: new EntriesService(),
 			authService: new AuthService(),
+			// timer: {
+			// 	isRunning: false,
+			// 	startTime: '',
+			// 	endTime: '',
+			// 	interval: null,
+			// 	start() {
+			// 		this.isRunning = true;
+			// 	},
+			// 	stop() {
+			// 		this.isRunning = false;
+			// 	},
+			// },
 			loading: true,
 			categories: [],
 			projects: [],
 			entries: [
-				{
-					id: 1,
-					projectId: 1,
-					categoryId: 1,
-					userId: 1,
-					description: 'Some text',
-					startTime: '2021-05-26T21:37:20.430Z',
-					endTime: '2021-05-26T21:56:20.430Z',
-					createdAt: '2021-05-26T21:37:20.430Z',
-				},
-				{
-					id: 2,
-					projectId: 1,
-					categoryId: 1,
-					userId: 1,
-					description: 'lorem',
-					startTime: '2021-05-26T21:37:20.430Z',
-					endTime: '2021-05-26T21:56:20.430Z',
-					createdAt: '2021-05-26T21:38:20.430Z',
-				},
-				{
-					id: 3,
-					projectId: 1,
-					categoryId: 1,
-					userId: 1,
-					description: 'I am the third entry',
-					startTime: '2021-05-26T21:37:20.430Z',
-					endTime: '2021-05-26T21:56:20.430Z',
-					createdAt: '2021-05-26T21:40:20.430Z',
-				},
+				// {
+				// 	id: 1,
+				// 	projectId: 1,
+				// 	categoryId: 1,
+				// 	userId: 1,
+				// 	description: 'Some text',
+				// 	startTime: '2021-05-26T21:37:20.430Z',
+				// 	endTime: '2021-05-26T21:56:20.430Z',
+				// 	createdAt: '2021-05-26T21:37:20.430Z',
+				// },
+				// {
+				// 	id: 2,
+				// 	projectId: 1,
+				// 	categoryId: 1,
+				// 	userId: 1,
+				// 	description: 'lorem',
+				// 	startTime: '2021-05-26T21:37:20.430Z',
+				// 	endTime: '2021-05-26T21:56:20.430Z',
+				// 	createdAt: '2021-05-26T21:38:20.430Z',
+				// },
+				// {
+				// 	id: 3,
+				// 	projectId: 1,
+				// 	categoryId: 1,
+				// 	userId: 1,
+				// 	description: 'I am the third entry',
+				// 	startTime: '2021-05-26T21:37:20.430Z',
+				// 	endTime: '2021-05-26T21:56:20.430Z',
+				// 	createdAt: '2021-05-26T21:40:20.430Z',
+				// },
 			],
 		};
 	},
@@ -145,6 +190,9 @@ export default {
 			const { id } = this.$route.params;
 			if (this.projects.length > 0) return this.projects.find((project) => project.id == id);
 			return {};
+		},
+		currentRunningEntry() {
+			return this.entries.find((entry) => entry.hasRunningTimer)
 		},
 		// sortedEntries() {
 		// 	return this.entries.sort((a,b) => {
@@ -172,15 +220,28 @@ export default {
 		},
 	},
 	async created() {
-		await Promise.all([
-			this.getCategories(),
-			this.getEntries(),
-			this.getProjects(),
-		]);
+		await Promise.all([this.getCategories(), this.getEntries(), this.getProjects()]);
 
 		this.loading = false;
 	},
+	async beforeDestroy() {
+		if(this.currentRunningEntry) {
+			const stoppedEntry = this.currentRunningEntry.stopTimer();
+			await this.saveEntry(stoppedEntry);
+		}
+	},
 	methods: {
+		timerStart(entry) {
+			if(this.currentRunningEntry) this.currentRunningEntry.stopTimer();
+			entry.startTimer();
+		},
+
+		timerStop(entry) {
+			entry.stopTimer();
+			this.saveEntry(entry);
+			return entry;
+		},
+
 		focusInput(node) {
 			node.querySelector('textarea').focus();
 		},
@@ -195,7 +256,12 @@ export default {
 		},
 
 		async getEntries() {
-			this.entries = await this.entriesService.findAll();
+			let entries = await this.entriesService.findAll();
+			this.entries = entries.map((entry) => {
+				entry.hasRunningTimer = false; // This can be used to to add focus when user tries to start multiple timers
+				return entry;
+			});
+
 			return;
 		},
 
@@ -205,6 +271,7 @@ export default {
 		},
 
 		async addEntry() {
+			// if any entry is running stop it. Holding off on this for now
 			// @ts-ignore
 			let entry = new CreateEntryDto({
 				projectId: this.project.id,
@@ -247,7 +314,7 @@ export default {
 			}
 			return;
 		},
-	}
+	},
 };
 </script>
 
