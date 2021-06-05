@@ -2,7 +2,7 @@
 	<div class="mx-auto w-full">
 		<header class="mb-4 flex justify-between items-center">
 			<h1 class="text-4xl mb-2">Entries</h1>
-			<button class="rounded px-2 py-2 bg-indigo-200" @click="addEntry">New Entry</button>
+			<button class="rounded px-2 py-2 bg-indigo-50 transition duration-500 ease-in-out hover:bg-indigo-500 hover:text-white" @click="addEntry">New Entry</button>
 		</header>
 		<div class="" v-if="!loading && entries.length === 0">You have no entries. Please add a new entry.</div>
 		<div class="flex flex-col" v-else>
@@ -15,8 +15,6 @@
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
 									<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-									<!-- <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th> -->
-									<!-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th> -->
 									<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Time</th>
 									<th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
 								</tr>
@@ -39,7 +37,14 @@
 										<div class="bg-gray-200 h-8 w-full"></div>
 									</td>
 								</tr>
-								<tr class="transition duration-500 ease-in-out" :class="{ 'bg-indigo-500 text-white': entry.hasRunningTimer }" v-for="entry in entries" :key="entry.id" ref="entryRows" v-else>
+								<tr
+									class="transition duration-500 ease-in-out"
+									:class="{ 'bg-indigo-500 text-white': entry.hasRunningTimer }"
+									v-for="entry in entries"
+									:key="entry.id"
+									ref="entryRows"
+									v-else
+								>
 									<td class="py-4">
 										<select class="m-2.5 rounded-md border border-indigo-100 w-full" v-model="entry.categoryId" @change="saveEntry(entry)">
 											<option value=""></option>
@@ -51,7 +56,7 @@
 									<td class="text-center" :class="entry.hasRunningTimer ? 'text-gray-200' : ''">
 										{{ entry.createdAt | toDateFormat }}
 									</td>
-									<td>
+									<td :class="entry.hasRunningTimer ? 'text-gray-700' : ''">
 										<textarea class="w-full m-2.5 rounded-md border border-indigo-100" v-model="entry.description" @blur="saveEntry(entry)"> </textarea>
 									</td>
 									<!-- <td class="text-center text-gray-400">
@@ -67,7 +72,7 @@
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												class="h-12 w-12 cursor-pointer"
-												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-400'"
+												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-500'"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke="currentColor"
@@ -80,7 +85,7 @@
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												class="h-12 w-12 cursor-pointer"
-												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-400'"
+												:class="entry.hasRunningTimer ? '' : 'text-gray-400 hover:text-indigo-500'"
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke="currentColor"
@@ -136,53 +141,10 @@ export default {
 			projectsService: new ProjectsService(),
 			entriesService: new EntriesService(),
 			authService: new AuthService(),
-			// timer: {
-			// 	isRunning: false,
-			// 	startTime: '',
-			// 	endTime: '',
-			// 	interval: null,
-			// 	start() {
-			// 		this.isRunning = true;
-			// 	},
-			// 	stop() {
-			// 		this.isRunning = false;
-			// 	},
-			// },
 			loading: true,
 			categories: [],
 			projects: [],
-			entries: [
-				// {
-				// 	id: 1,
-				// 	projectId: 1,
-				// 	categoryId: 1,
-				// 	userId: 1,
-				// 	description: 'Some text',
-				// 	startTime: '2021-05-26T21:37:20.430Z',
-				// 	endTime: '2021-05-26T21:56:20.430Z',
-				// 	createdAt: '2021-05-26T21:37:20.430Z',
-				// },
-				// {
-				// 	id: 2,
-				// 	projectId: 1,
-				// 	categoryId: 1,
-				// 	userId: 1,
-				// 	description: 'lorem',
-				// 	startTime: '2021-05-26T21:37:20.430Z',
-				// 	endTime: '2021-05-26T21:56:20.430Z',
-				// 	createdAt: '2021-05-26T21:38:20.430Z',
-				// },
-				// {
-				// 	id: 3,
-				// 	projectId: 1,
-				// 	categoryId: 1,
-				// 	userId: 1,
-				// 	description: 'I am the third entry',
-				// 	startTime: '2021-05-26T21:37:20.430Z',
-				// 	endTime: '2021-05-26T21:56:20.430Z',
-				// 	createdAt: '2021-05-26T21:40:20.430Z',
-				// },
-			],
+			entries: [],
 		};
 	},
 	computed: {
