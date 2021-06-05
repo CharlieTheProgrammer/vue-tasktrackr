@@ -24,5 +24,17 @@ export default {
 	components: {
 		'v-entries-list': EntriesListVue,
 	},
+	beforeRouteLeave(to, from, next) {
+		if (this.$route.meta.currentRunningEntry) {
+			const answer = window.confirm('Do you really want to leave? You have unsaved changes!');
+			if (answer) {
+				next();
+			} else {
+				next(false);
+			}
+		} else {
+			next();
+		}
+	},
 };
 </script>

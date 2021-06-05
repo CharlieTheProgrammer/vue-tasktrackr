@@ -149,7 +149,7 @@ export default {
 			return {};
 		},
 		currentRunningEntry() {
-			return this.entries.find((entry) => entry.hasRunningTimer)
+			return this.entries.find((entry) => entry.hasRunningTimer);
 		},
 		// sortedEntries() {
 		// 	return this.entries.sort((a,b) => {
@@ -164,16 +164,15 @@ export default {
 	async created() {
 		await Promise.all([this.getCategories(), this.getEntries(), this.getProjects()]);
 		this.loading = false;
+		window.addEventListener('beforeunload', this.catchRunningEntryOnExit);
 	},
 	async beforeDestroy() {
-		if(this.currentRunningEntry) {
-			const stoppedEntry = this.currentRunningEntry.stopTimer();
-			await this.saveEntry(stoppedEntry);
-		}
+		window.removeEventListener('beforeunload', this.catchRunningEntryOnExit);
+		await this.catchRunningEntryOnExit();
 	},
 	methods: {
 		timerStart(entry) {
-			if(this.currentRunningEntry) this.currentRunningEntry.stopTimer();
+			if (this.currentRunningEntry) this.currentRunningEntry.stopTimer();
 			entry.startTimer();
 		},
 
@@ -181,6 +180,13 @@ export default {
 			entry.stopTimer();
 			this.saveEntry(entry);
 			return entry;
+		},
+
+		async catchRunningEntryOnExit() {
+			if (this.currentRunningEntry) {
+				const stoppedEntry = this.currentRunningEntry.stopTimer();
+				await this.saveEntry(stoppedEntry);
+			}
 		},
 
 		focusInput(node) {
@@ -197,12 +203,7 @@ export default {
 		},
 
 		async getEntries() {
-			let entries = await this.entriesService.findAll();
-			this.entries = entries.map((entry) => {
-				entry.hasRunningTimer = false; // This can be used to to add focus when user tries to start multiple timers
-				return entry;
-			});
-
+			this.entries = await this.entriesService.findAll();
 			return;
 		},
 
@@ -219,7 +220,6 @@ export default {
 			});
 
 			this.entries.push(entry);
-
 			this.saveEntry(entry);
 		},
 
@@ -232,10 +232,8 @@ export default {
 				result = window.confirm(`Are you sure you want to delete "${truncatedDesc}"`);
 			}
 
-			if (result && entry.id) {
-				let res = await this.entriesService.delete(entry.id);
-				this.entries = this.filterArray(this.entries, entry.id);
-			} else if (result) this.entries = this.filterArray(this.entries, entry.id);
+			await this.entriesService.delete(entry.id);
+			this.entries = this.filterArray(this.entries, entry.id);
 		},
 
 		async saveEntry(entry: CreateEntryDto) {
@@ -254,6 +252,12 @@ export default {
 				});
 			}
 			return;
+		},
+	},
+	watch: {
+		currentRunningEntry(val) {
+			if (val) this.$route.meta.currentRunningEntry = val;
+			else this.$route.meta.currentRunningEntry = false;
 		},
 	},
 };
