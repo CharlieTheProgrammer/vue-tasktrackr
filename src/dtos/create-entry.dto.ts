@@ -19,11 +19,8 @@ export class CreateEntryDto {
   @IsString()
   description: string;
 
-  @IsDateString()
-  startTime: string;
-  
-  @IsDateString()
-  endTime: string;
+  @IsOptional()
+  totalSeconds: number;
 
   constructor({projectId, categoryId}) {
     this.id = null;
@@ -31,8 +28,7 @@ export class CreateEntryDto {
     this.categoryId = categoryId || null;
     this.userId = 1;
     this.description = '';
-    this.startTime = DateTime.now().toUTC().toISO();
-    this.endTime = null;
+    this.totalSeconds = 0;
   }
 
 }
