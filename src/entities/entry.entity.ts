@@ -30,7 +30,7 @@ export class Entry {
 			let endTime = DateTime.now();
 			const diff = endTime.diff(startTime, 'seconds'); 
 			if (!this.currentSeconds) this.currentSeconds = 0;
-			this.totalSeconds = diff.toObject().seconds + this.currentSeconds;
+			this.totalSeconds = Math.round(diff.toObject().seconds + this.currentSeconds);
 		}, 100);
 	}
 

@@ -59,13 +59,8 @@
 									<td :class="entry.hasRunningTimer ? 'text-gray-700' : ''">
 										<textarea class="w-full m-2.5 rounded-md border border-indigo-100" v-model="entry.description" @blur="saveEntry(entry)"> </textarea>
 									</td>
-									<!-- <td class="text-center text-gray-400">
-										{{ entry.startTime | toTimeFormat }}
-									</td> -->
-									<!-- <td v-if="displayEndTime" class="text-center d-none d-sm-table-cell">{{ entry.total_time | toTimeFormat }}</td> -->
-									<td class="text-center">
-										{{ Math.round(entry.totalSeconds) }}s
-										<!-- {{ entry.startTime | generateTotalTime(entry.endTime) }} -->
+									<td class="text-xl text-center font-semibold">
+										{{ entry.totalSeconds | toHrsSecondsFormat }}
 									</td>
 									<td class="w-2 px-3">
 										<div class="flex items-center space-x-3">
@@ -126,15 +121,15 @@
 </template>
 
 <script lang="ts">
-import { DateTime } from 'luxon';
+import { DateTimeMixins } from '@/DateTimeMixins';
 import { CreateEntryDto } from '@/dtos/create-entry.dto';
-import { UpdateEntryDto } from '@/dtos/update-entry.dto';
 import { ProjectsService } from '@/services/projects.service';
 import { EntriesService } from '@/services/entries.service';
 import { CategoriesService } from '@/services/categories.service';
 import { AuthService } from '@/services/auth.service';
 
 export default {
+	mixins: [DateTimeMixins],
 	data() {
 		return {
 			categoriesService: new CategoriesService(),
@@ -166,24 +161,8 @@ export default {
 		// 	})
 		// }
 	},
-	filters: {
-		generateTotalTime(startTime, endTime) {
-			if (!endTime) return '0s';
-			const sTime = DateTime.fromISO(startTime);
-			const eTime = DateTime.fromISO(endTime);
-			const diffTime = eTime.diff(sTime, 'minutes');
-			return `${diffTime.minutes}m${diffTime.seconds}s`;
-		},
-		toTimeFormat(time) {
-			return DateTime.fromISO(time).toLocaleString(DateTime.TIME_SIMPLE);
-		},
-		toDateFormat(time) {
-			return DateTime.fromISO(time).toLocaleString(DateTime.DATE_MED);
-		},
-	},
 	async created() {
 		await Promise.all([this.getCategories(), this.getEntries(), this.getProjects()]);
-
 		this.loading = false;
 	},
 	async beforeDestroy() {
