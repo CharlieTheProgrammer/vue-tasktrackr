@@ -1,12 +1,12 @@
 <template>
-	<div id="app" class="flex flex-col min-h-screen">
+	<div id="app" class="flex flex-col min-h-screen" :class="{ sky: currentRoute === 'Home' }">
 		<v-header :isAuthenticated="false"></v-header>
 
 		<div class="flex-1 flex flex-grow">
 			<router-view></router-view>
 		</div>
 
-		<v-footer></v-footer>
+		<v-footer :class="currentRoute === 'Home' ? 'text-gray-100' : 'text-gray-700'"></v-footer>
 	</div>
 </template>
 
@@ -40,6 +40,9 @@ export default {
 				return 'position: relative;';
 			}
 		},
+		currentRoute() {
+			return this.$route.name;
+		},
 	},
 	methods: {
 		logState: function () {
@@ -68,5 +71,12 @@ export default {
 			color: #42b983;
 		}
 	}
+}
+
+.sky {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/images/Optimized-starrysky.jpg');
+	background-size: cover;
+	background-position: center top;
+	background-repeat: no-repeat;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 	<footer class="footer">
-		<div class="p-2 text-gray-100 text-sm text-center font-semibold">
+		<div class="p-2 text-sm text-center font-semibold">
 			<span>&copy; {{ year }} Charlie The Programmer</span>
 		</div>
 	</footer>
