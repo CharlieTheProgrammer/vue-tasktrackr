@@ -1,8 +1,14 @@
 import httpService from './http.service';
 import jwt_decode from 'jwt-decode';
+// Reactive
+import { User } from '@/store/user';
 
 export class AuthService {
-	constructor() {}
+	user = User;
+
+	constructor() {
+		if (this.getUser()) User.isAuthenticated = true;
+	}
 
 	async login(login, password) {
 		const response = await httpService.post('/auth/login', {
@@ -10,12 +16,13 @@ export class AuthService {
 			password,
 		});
 		this.setToken(response.data.access_token);
-		return;
+		User.isAuthenticated = true;
+		return response.data.access_token;
 	}
 
 	async logout() {
-		const response = await httpService.get('/auth/logout');
 		this.deleteToken();
+		User.isAuthenticated = false;
 		return;
 	}
 
@@ -32,9 +39,17 @@ export class AuthService {
 	}
 
 	getUser() {
-		let token = this.getToken();
-		if (!token) return null;
-		let decoded: any = jwt_decode(token);
-		return decoded.user;
+		try {
+			let token = this.getToken();
+			if (!token) return null;
+			let decoded: any = jwt_decode(token);
+			return decoded.user;
+		} catch (error) {
+			return false;
+		}
+	}
+
+	isUserAuthenticated() {
+		return this.user.isAuthenticated;
 	}
 }

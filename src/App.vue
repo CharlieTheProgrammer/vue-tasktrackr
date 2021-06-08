@@ -1,6 +1,6 @@
 <template>
 	<div id="app" class="flex flex-col min-h-screen" :class="{ sky: currentRoute === 'Home' }">
-		<v-header :isAuthenticated="false"></v-header>
+		<v-header :isAuthenticated="isAuthenticated"></v-header>
 
 		<div class="flex-1 flex flex-grow">
 			<router-view></router-view>
@@ -10,43 +10,27 @@
 	</div>
 </template>
 
-<script>
+<script lang="ts">
 import Footer from './components/Footer.vue';
 import Header from './components/Header.vue';
+import { AuthService } from '@/services/auth.service';
 
 export default {
 	components: {
 		'v-footer': Footer,
 		'v-header': Header,
 	},
-	data: function () {
-		return {};
+	data() {
+		return {
+			authService: new AuthService(),
+		};
 	},
 	computed: {
 		isAuthenticated: function () {
-			return this.$store.getters.isAuthenticated;
-		},
-		footerClasses: function () {
-			if (this.$route.path == '/') {
-				return 'text-light';
-			} else {
-				return 'text-dark';
-			}
-		},
-		footerStyle: function () {
-			if (this.$route.path == '/') {
-				return 'position: fixed;';
-			} else {
-				return 'position: relative;';
-			}
+			return this.authService.isUserAuthenticated();
 		},
 		currentRoute() {
 			return this.$route.name;
-		},
-	},
-	methods: {
-		logState: function () {
-			console.log(this.$store.state);
 		},
 	},
 };
