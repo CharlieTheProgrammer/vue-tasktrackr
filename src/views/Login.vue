@@ -9,7 +9,7 @@
 						<span><router-link to="/register">create a new account</router-link></span>
 					</div>
 				</div>
-				<form action="post" @submit="signIn">
+				<form action="post" @submit.prevent="signIn">
 					<div class="grid grid-cols-1 gap-8">
 						<label class="block">
 							<span class="text-gray-700">Email</span>
@@ -18,13 +18,14 @@
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
 								placeholder="john@example.com"
 								v-model="login"
+								autocomplete="true"
 								required
 							/>
 						</label>
 						<label class="block">
 							<span class="text-gray-700">Password</span>
 							<input
-								type="text"
+								type="password"
 								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
 								v-model="password"
 								required
@@ -47,7 +48,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@/services/auth.service';
 
 export default Vue.extend({
 	data() {
@@ -58,9 +59,12 @@ export default Vue.extend({
 		};
 	},
 	methods: {
-		async signIn(evt) {
-			evt.preventDefault();
-			return await this.authService.login(this.login, this.password);
+		async signIn() {
+			const token = await this.authService.login(this.login, this.password);
+			if (token) {
+				this.$router.push({ name: 'Dashboard' });
+			}
+			return;
 		},
 	},
 });
