@@ -1,5 +1,5 @@
 <template>
-	<div class="w-full">
+	<div class="w-full pb-4">
 		<div class="flex flex-col text-white space-y-14">
 			<section class="bg-blue-900 w-full">
 				<div class="max-w-screen-xl p-10 mx-auto">
@@ -98,46 +98,30 @@
 				<h1 class="text-7xl font-light">Start Time Tracking Today</h1>
 				<p class="text-lg font-light w-75 mx-auto px-4">TaskTrackr allows you to create projects, assign categories, and keep track of all your time spent.</p>
 				<div class="flex justify-center items-center w-full text-white">
-					<router-link to="/signup" class="text-xl tracking-wide bg-green-500 p-4 rounded my-3 w-1/2">Sign up</router-link>
+					<router-link to="/register" class="text-xl tracking-wide bg-green-500 p-4 rounded my-3 w-1/2">Sign up</router-link>
 				</div>
 			</div>
 		</section>
 
-		<div class="w-full hidden">
-			<div class="bg-gray-200 max-w-4xl w-full mx-auto p-10 mt-14 rounded flex-shrink shadow-md">
-				<div class="max-w-sm mx-auto space-y-8">
-					<div class="text-center space-y-2">
-						<h1 class="text-3xl font-semibold">Start Time Tracking Today</h1>
-						<div class="text-lg font-light">TaskTrackr allows you to create projects, assign categories, and keep track of all your time spent.</div>
-					</div>
-
-					<div class="grid grid-cols-1 gap-8">
-						<label class="block">
-							<span class="text-gray-700">Login</span>
-							<input
-								type="text"
-								class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-								placeholder="john@example.com"
-							/>
-						</label>
-						<label class="block">
-							<span class="text-gray-700">Password</span>
-							<input type="email" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
-						</label>
-						<div class="block">
-							<div class="mt-2 text-center">
-								<button class="text-white text-lg bg-green-500 rounded p-3 w-1/2">Login</button>
-							</div>
-						</div>
-						<div class="text-center">
-							<router-link to="/forgot-password">Forgot your password?</router-link>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 </template>
+
+<script>
+import { AuthService } from '@/services/auth.service';
+
+export default {
+	data() {
+		return {
+			authService: new AuthService()
+		}
+	},
+	computed: {
+		isAuthenticated() {
+			return this.authService.isUserAuthenticated();
+		}
+	}
+}
+</script>
 
 <style lang="scss" scoped>
 li {
