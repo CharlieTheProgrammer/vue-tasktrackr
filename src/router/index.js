@@ -61,6 +61,7 @@ const routes = [
 		name: 'Settings',
 		component: () => import(/* webpackChunkName: "settings" */ '../views/Settings.vue'),
 		meta: { requiresAuth: true },
+		props: route => ({ query: route.query.isNewUser })
 	},
 	// {
 	// 	path: '/workspace',
