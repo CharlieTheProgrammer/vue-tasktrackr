@@ -3,7 +3,7 @@
 		<header class="mb-4 flex justify-between items-center">
 			<h1 class="text-4xl mb-2">Projects</h1>
 			<!-- <div class="text-sm text-gray-400">Select a project below</div> -->
-			<button class="text-xs rounded px-2 py-2 bg-indigo-200" @click="addProject">Add New Project</button>
+			<button class="text-xs rounded px-2 py-2 bg-indigo-200" @click.stop="addProject">Add New Project</button>
 		</header>
 		<div class="" v-if="!loading && projects.length === 0">You have no projects. Please add a new project.</div>
 		<div class="flex flex-col" v-else>
@@ -28,7 +28,7 @@
 										<div class="bg-gray-200 h-8 w-full"></div>
 									</td>
 								</tr>
-								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows" v-else @click="goTo(project)">
+								<tr class="hover:bg-gray-100 cursor-pointer" v-for="project in projects" :key="project.id" ref="projectRows" v-else @click.stop="goTo(project)">
 									<td class="px-6 py-4 whitespace-nowrap">
 										<label class="block" v-if="project.editable">
 											<input
@@ -43,7 +43,7 @@
 										</div>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-										<button type="button" class="text-indigo-600 hover:text-indigo-900 focus:outline-none" @click="project.editable = !project.editable" v-if="!project.editable">
+										<button type="button" class="text-indigo-600 hover:text-indigo-900 focus:outline-none" @click.stop="project.editable = !project.editable" v-if="!project.editable">
 											Edit
 										</button>
 										<button
@@ -55,7 +55,7 @@
 										>
 											Save
 										</button>
-										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="deleteProject(project)">Delete</button>
+										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click.stop="deleteProject(project, $event)">Delete</button>
 									</td>
 								</tr>
 							</tbody>
@@ -162,7 +162,7 @@ export default {
 		},
 
 		async deleteProject(project) {
-			const result = window.confirm(`Are you sure you want to delete ${project.name}`);
+			const result = window.confirm(`Are you sure you want to delete ${project.name}?`);
 			if (result && project.id) {
 				await this.projectsService.delete(project.id);
 				this.projects = this.filterArray(this.projects, project.id);

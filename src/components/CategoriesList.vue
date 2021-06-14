@@ -3,7 +3,7 @@
 		<header class="mb-4 flex justify-between items-center">
 			<h1 class="text-4xl mb-2">Categories</h1>
 			<!-- <div class="text-sm text-gray-400">Select a category below</div> -->
-			<button class="text-xs rounded px-2 py-2 bg-indigo-200" @click="addCategory()">Add New Category</button>
+			<button class="text-xs rounded px-2 py-2 bg-indigo-200" @click.stop="addCategory()">Add New Category</button>
 		</header>
 		<div class="" v-if="!loading && categories.length === 0">You have no categories. Please add a new category.</div>
 		<div class="flex flex-col" v-else>
@@ -51,10 +51,10 @@
 										>
 											Edit
 										</button>
-										<button type="button" class="text-green-600 hover:text-green-900 focus:outline-none" @click="saveCategory(category)" :disabled="!category.name" v-else>
+										<button type="button" class="text-green-600 hover:text-green-900 focus:outline-none" @click.stop="saveCategory(category)" :disabled="!category.name" v-else>
 											Save
 										</button>
-										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click="deleteCategory(category)">Delete</button>
+										<button type="button" class="text-gray-400 hover:text-red-600 focus:outline-none" @click.stop="deleteCategory(category)">Delete</button>
 									</td>
 								</tr>
 							</tbody>
@@ -156,7 +156,7 @@ export default {
 		},
 
 		async deleteCategory(category) {
-			const result = window.confirm(`Are you sure you want to delete ${category.name}`);
+			const result = window.confirm(`Are you sure you want to delete ${category.name}?`);
 			if (result && category.id) {
 				let res = await this.categoriesService.delete(category.id);
 				this.categories = this.filterArray(this.categories, category.id);
@@ -165,6 +165,7 @@ export default {
 
 		async saveCategory(category: CreateCategoryDto, index) {
 			if (this.hasEmptyName(this.categories) > -1) return this.handleEmptyName();
+			// TODO: This needs to be moved to the backend?
 			let user = this.authService.getUser();
 			category.userId = user.id;
 			// @ts-ignore

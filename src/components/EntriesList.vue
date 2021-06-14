@@ -2,7 +2,7 @@
 	<div class="mx-auto w-full">
 		<header class="mb-4 flex justify-between items-center">
 			<h1 class="text-4xl mb-2">Entries</h1>
-			<button class="rounded px-2 py-2 bg-indigo-50 transition duration-500 ease-in-out hover:bg-indigo-500 hover:text-white" @click="addEntry">New Entry</button>
+			<button class="rounded px-2 py-2 bg-indigo-50 transition duration-500 ease-in-out hover:bg-indigo-500 hover:text-white" @click.stop="addEntry">New Entry</button>
 		</header>
 		<div class="" v-if="!loading && entries.length === 0">You have no entries. Please add a new entry.</div>
 		<div class="flex flex-col" v-else>
@@ -46,7 +46,7 @@
 									v-else
 								>
 									<td class="py-4">
-										<select class="m-2.5 rounded-md border border-indigo-100 w-full" v-model="entry.categoryId" @change="saveEntry(entry)">
+										<select class="m-2.5 rounded-md border border-indigo-100 w-full" :class="{ 'text-black': entry.hasRunningTimer }" v-model="entry.categoryId" @change="saveEntry(entry)">
 											<option value=""></option>
 											<option v-for="(category, index) in categories" :key="index" :selected="entry.categoryId == category.id ? 'selected' : null" :value="category.id">
 												{{ category.name }}
@@ -72,7 +72,7 @@
 												viewBox="0 0 24 24"
 												stroke="currentColor"
 												v-if="entry.hasRunningTimer"
-												@click="timerStop(entry)"
+												@click.stop="timerStop(entry)"
 											>
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
@@ -84,7 +84,7 @@
 												fill="none"
 												viewBox="0 0 24 24"
 												stroke="currentColor"
-												@click="timerStart(entry)"
+												@click.stop="timerStart(entry)"
 												v-else
 											>
 												<path
@@ -100,7 +100,7 @@
 												class="mx-auto h-5 w-5 text-gray-300 hover:text-red-600 cursor-pointer"
 												viewBox="0 0 20 20"
 												fill="currentColor"
-												@click="deleteEntry(entry)"
+												@click.stop="deleteEntry(entry)"
 											>
 												<path
 													fill-rule="evenodd"
@@ -229,7 +229,7 @@ export default {
 			if (!truncatedDesc) {
 				result = window.confirm(`Are you sure you want to delete this entry?`);
 			} else {
-				result = window.confirm(`Are you sure you want to delete "${truncatedDesc}"`);
+				result = window.confirm(`Are you sure you want to delete "${truncatedDesc}"?`);
 			}
 
 			await this.entriesService.delete(entry.id);
