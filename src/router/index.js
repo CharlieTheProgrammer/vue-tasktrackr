@@ -51,7 +51,7 @@ const routes = [
 		meta: { requiresAuth: true },
 	},
 	{
-		path: '/projects/:id',
+		path: '/projects/:projectId/entries',
 		name: 'Project',
 		component: () => import(/* webpackChunkName: "projects" */ '../views/Workspace.vue'),
 		meta: { requiresAuth: true },

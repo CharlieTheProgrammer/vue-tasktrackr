@@ -114,7 +114,7 @@ export default {
 	methods: {
 		goTo(project) {
 			const { id } = project;
-			this.$router.push({ path: `/projects/${id}` });
+			this.$router.push({ path: `/projects/${id}/entries` });
 		},
 
 		focusInput(node) {

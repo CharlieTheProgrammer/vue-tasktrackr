@@ -125,6 +125,7 @@ import { DateTimeMixins } from '@/DateTimeMixins';
 import { CreateEntryDto } from '@/dtos/create-entry.dto';
 import { ProjectsService } from '@/services/projects.service';
 import { EntriesService } from '@/services/entries.service';
+import { ProjectEntriesService } from '@/services/projectEntries.service';
 import { CategoriesService } from '@/services/categories.service';
 import { AuthService } from '@/services/auth.service';
 
@@ -134,6 +135,7 @@ export default {
 		return {
 			categoriesService: new CategoriesService(),
 			projectsService: new ProjectsService(),
+			projectEntriesService: new ProjectEntriesService(),
 			entriesService: new EntriesService(),
 			authService: new AuthService(),
 			loading: true,
@@ -144,8 +146,8 @@ export default {
 	},
 	computed: {
 		project() {
-			const { id } = this.$route.params;
-			if (this.projects.length > 0) return this.projects.find((project) => project.id == id);
+			const { projectId } = this.$route.params;
+			if (this.projects.length > 0) return this.projects.find((project) => project.id == projectId);
 			return {};
 		},
 		currentRunningEntry() {
@@ -203,7 +205,7 @@ export default {
 		},
 
 		async getEntries() {
-			this.entries = await this.entriesService.findAll();
+			this.entries = await this.projectEntriesService.findAllByProjectId(this.$route.params.projectId);
 			return;
 		},
 
