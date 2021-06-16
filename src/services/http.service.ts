@@ -11,12 +11,9 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.interceptors.request.use(
 	function (config) {
 		const token = localStorage.getItem('AUTH_TOKEN');
-		if (!axios.defaults.headers.common['Authorization'] && token) {
-			axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-			// This needs to be added because adding it to defaults doesn't take effect
-			// until the next request, meaning the current request will not include the token
-			config.headers.common.Authorization = `Bearer ${token}`;
-		}
+		config.headers.common.Authorization = `Bearer ${token}`;
+
+		// This fails in scenarios where multiple requests get launched at the same time
 
 		return config;
 	},
