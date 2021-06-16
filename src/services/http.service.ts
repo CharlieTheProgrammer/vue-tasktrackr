@@ -12,14 +12,23 @@ axios.interceptors.request.use(
 	function (config) {
 		const token = localStorage.getItem('AUTH_TOKEN');
 		config.headers.common.Authorization = `Bearer ${token}`;
-
-		// This fails in scenarios where multiple requests get launched at the same time
-
 		return config;
 	},
 	function (error) {
 		// Do something with request error
 		return Promise.reject(error);
+	}
+);
+
+axios.interceptors.response.use(
+	(response) => {
+		return response;
+	},
+	(error) => {
+		if (error.response.status === 401) {
+			window.location.replace('/login')
+		}
+		return error;
 	}
 );
 
