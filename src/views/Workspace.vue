@@ -28,6 +28,7 @@ export default {
 		if (this.$route.meta.currentRunningEntry) {
 			const answer = window.confirm('Do you really want to leave? You have unsaved changes!');
 			if (answer) {
+				this.$route.meta.currentRunningEntry = false;
 				next();
 			} else {
 				next(false);
